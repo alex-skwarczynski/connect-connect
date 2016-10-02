@@ -14,20 +14,23 @@ var app = express();
 var server = require('http').createServer(app);
 
 var io = require('socket.io')(server);
-var counter = 0;
-io.on('connection', function(socket){
-    socket.on('chat message', function(msg){
-        counter++;
-        console.log('message: ' + msg);
-        io.emit('chat message', counter+': '+msg);
-    });
-    fs.readFile('./public/images/blue quad.jpg', function(err, buf){
-        socket.emit('image', { image: true, buffer: buf.toString('base64') });
-    });
-    socket.on('img upload', function(buf){
-        io.emit('image', { image: true, buffer: buf.toString('base64') });
-    });
-});
+for(var i = 0; i < 10; i++){
+    (function(){
+        paths = [];
+        var nsp = io.of('/'+i);
+        nsp.on('connection', function(socket){
+            socket.on('chat message', function(msg){
+                console.log(msg);
+                nsp.emit('chat message',msg);
+            });
+
+            socket.on('path', function(msg){
+                paths.push(msg);
+                socket.broadcast.emit('path', msg);
+            });
+        });
+    })()
+}
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
