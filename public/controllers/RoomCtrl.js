@@ -64,8 +64,8 @@ function RoomCtrl($scope, appService){
         // var ratio2 =  oldHeight/window.innerHeight;
         // ctx.setScale(ratio1, ratio2);
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth*.8;
+        canvas.height = window.innerHeight*.8;
     }
 
     function draw() {
@@ -93,16 +93,16 @@ function RoomCtrl($scope, appService){
         if(event.type === "mousedown") {
             drawPath = true;
             prevX = event.clientX;
-            prevY = event.clientY;
+            prevY = event.clientY-60;
             currX = event.clientX;
-            currY = event.clientY;
+            currY = event.clientY-60;
         }
         else if(event.type === "mousemove") {
             if(drawPath) {
                 prevX = currX;
                 prevY = currY;
                 currX = event.clientX;
-                currY = event.clientY;
+                currY = event.clientY-60;
                 draw();
             }
         }

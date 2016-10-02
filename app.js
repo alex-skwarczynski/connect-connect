@@ -3,7 +3,11 @@
  */
 
 var express = require('express');
+var AWS = require('aws-sdk');
 var fs = require('fs');
+
+var dynamodb = new AWS.DynamoDB();
+var table = "Rooms";
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
@@ -12,6 +16,13 @@ var cfenv = require('cfenv');
 // create a new express server
 var app = express();
 var server = require('http').createServer(app);
+
+//item
+var item = {
+    "user": "RichTheKid",
+    "code": "x6x5f",
+    "message": "SHUT THE FUCK UP"
+};
 
 var io = require('socket.io')(server);
 for(var i = 0; i < 10; i++){
@@ -31,6 +42,18 @@ for(var i = 0; i < 10; i++){
         });
     })()
 }
+
+dynamodb.putItem({
+    "TableName": table,
+    "Item": item
+},function(err, data)
+{
+    if(err) {
+        socket.emit(item, "error");
+    }else{
+        socket.emit(item, data);
+    }
+});
 
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
